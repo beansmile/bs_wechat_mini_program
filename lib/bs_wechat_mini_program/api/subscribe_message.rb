@@ -5,6 +5,7 @@ module BsWechatMiniProgram
     module SubscribeMessage
 
       # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
+      # 发送订阅消息
       def send_subscribe_message(openid, template_id, data, page = nil)
         body = {
           touser: openid,

@@ -7,6 +7,8 @@ module BsWechatMiniProgram
     include HTTParty
     include BsWechatMiniProgram::API::Auth
     include BsWechatMiniProgram::API::SubscribeMessage
+    include BsWechatMiniProgram::API::Wxacode
+    include BsWechatMiniProgram::API::Security
 
     base_uri "https://api.weixin.qq.com"
 
