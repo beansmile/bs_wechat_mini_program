@@ -5,10 +5,6 @@ Create folder and clone project:
 mkdir engines && cd engines && git clone https://github.com/beansmile/bs_wechat_mini_program.git
 ```
 
-```ruby
-gem 'bs_wechat_mini_program'
-```
-
 Edit your Gemfile:
 
 ```
