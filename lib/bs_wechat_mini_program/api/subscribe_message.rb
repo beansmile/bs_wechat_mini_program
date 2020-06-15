@@ -6,12 +6,12 @@ module BsWechatMiniProgram
 
       # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
       # 发送订阅消息
-      def send_subscribe_message(openid, template_id, data, page = nil)
+      def send_subscribe_message(openid, template_id, data, options = {})
         body = {
           touser: openid,
           template_id: template_id,
           data: data,
-          page: page,
+          page: options[:page],
           miniprogram_state: Rails.env.production? ? "formal" : "trial"
         }
 
