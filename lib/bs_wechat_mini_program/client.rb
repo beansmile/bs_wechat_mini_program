@@ -99,7 +99,10 @@ module BsWechatMiniProgram
         @@logger.debug("request[#{uuid}]: method: #{method}, url: #{path}, body: #{body}, headers: #{headers}")
 
         response = begin
-                     JSON.parse(self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT).body)
+                     body = self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT).body
+                     JSON.parse(body)
+                   rescue JSON::ParserError
+                     body
                    rescue *HTTP_ERRORS
                      { "errmsg" => "连接超时" }
                    end

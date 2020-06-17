@@ -32,10 +32,27 @@ BsWechatMiniProgram.client.get_access_token
 
 Other mini program API
 
-```
-BsWechatMiniProgram.client.code_to_session(code)
-```
+* [登录 Auth](https://github.com/beansmile/bs_wechat_mini_program/blob/master/lib/bs_wechat_mini_program/api/auth.rb)
+* [内容安全 Security](https://github.com/beansmile/bs_wechat_mini_program/blob/master/lib/bs_wechat_mini_program/api/security.rb)
+* [订阅消息 SubscribeMessage](https://github.com/beansmile/bs_wechat_mini_program/blob/master/lib/bs_wechat_mini_program/api/subscribe_message.rb)
+* [小程序码 Wxacode](https://github.com/beansmile/bs_wechat_mini_program/blob/master/lib/bs_wechat_mini_program/api/wxacode.rb)
+
+
+### Model methods
+
+set_unlimited_wxacode
+
+生成无限制小程序码并上传到OSS（需要配置oss_adapter和oss_config)
+
+用法
 
 ```
-BsWechatMiniProgram.client.send_subscribe_message(openid, template_id, data, page)
+set_unlimited_wxacode :wxacode, page: "page/index/index", scene: -> { "id=#{id}" }
 ```
+
+第一个参数为需要保存OSS文件路径的属性
+
+第二个参数为Hash类型
+
+* page为小程序码页面（缺省则为主页）
+* scene为参数，缺省则为 `id=#{id}`
