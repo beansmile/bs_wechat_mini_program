@@ -64,7 +64,6 @@ GEM
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2, >= 2.2.2)
     builder (3.2.4)
-    coderay (1.1.2)
     concurrent-ruby (1.1.6)
     crass (1.0.6)
     erubi (1.9.0)
@@ -94,9 +93,6 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
-    pry (0.13.1)
-      coderay (~> 1.1)
-      method_source (~> 1.0)
     rack (2.2.2)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -134,14 +130,13 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.2)
     thor (1.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
     websocket-driver (0.7.2)
       websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.4)
+    websocket-extensions (0.1.5)
     zeitwerk (2.3.0)
 
 PLATFORMS
@@ -149,8 +144,6 @@ PLATFORMS
 
 DEPENDENCIES
   bs_wechat_mini_program!
-  pry
-  sqlite3
 
 BUNDLED WITH
    2.0.2
