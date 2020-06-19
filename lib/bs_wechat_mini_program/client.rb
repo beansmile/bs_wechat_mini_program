@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "httparty"
+require "openssl"
+require "base64"
+require "json"
 
 module BsWechatMiniProgram
   class Client
@@ -45,6 +48,28 @@ module BsWechatMiniProgram
 
     def api_authorization_token_key
       :api_authorization_token
+    end
+
+    def decrypt!(session_key, encrypted_data, iv)
+      begin
+        cipher = OpenSSL::Cipher::AES.new 128, :CBC
+        cipher.decrypt
+        cipher.padding = 0
+        cipher.key = Base64.decode64(session_key)
+        cipher.iv  = Base64.decode64(iv)
+        data = cipher.update(Base64.decode64(encrypted_data)) << cipher.final
+        result = JSON.parse data[0...-data.last.ord]
+      rescue StandardError => e
+        @@logger.debug("[UserData] decrypt error: #{e.message}")
+        raise "微信解析数据错误"
+      end
+
+      if result.dig("watermark", "appid") != appid
+        @@logger.debug("[UserData] decrypt error: #{result}")
+        raise "微信解析数据错误"
+      end
+
+      result
     end
 
     # return token
