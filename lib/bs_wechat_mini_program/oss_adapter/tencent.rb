@@ -2,9 +2,9 @@
 
 module BsWechatMiniProgram
   module OssAdapter
-    class Aws < Base
+    class Tencent < Base
       def self.client
-        @client ||= ::Aws::S3::Resource.new(region: oss_config[:region], credentials: ::Aws::Credentials.new(oss_config[:access_key_id], oss_config[:secret_access_key]))
+        @client ||= ::Aws::S3::Resource.new(region: oss_config[:region], credentials: ::Aws::Credentials.new(oss_config[:access_key_id], oss_config[:secret_access_key]), endpoint: endpoint)
       end
 
       def self.bucket
@@ -19,7 +19,7 @@ module BsWechatMiniProgram
 
         resp = obj.put(body: file, content_type: content_type, acl: "public-read")
 
-        "https://#{oss_config[:bucket]}.s3-#{oss_config[:region]}.amazonaws.com/#{save_path}"
+        "https://#{oss_config[:bucket]}.cos.#{oss_config[:region]}.myqcloud.com/#{save_path}"
       end
 
       def self.signature
@@ -33,6 +33,10 @@ module BsWechatMiniProgram
           signature_expiration: presigned_data.instance_variable_get(:@signature_expiration),
           form_data: presigned_data.fields.as_json
         }
+      end
+
+      def self.endpoint
+        "https://cos.#{oss_config[:region]}.myqcloud.com"
       end
     end
   end

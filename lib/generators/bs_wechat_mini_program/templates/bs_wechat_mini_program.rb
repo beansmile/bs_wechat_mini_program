@@ -17,13 +17,24 @@ BsWechatMiniProgram.configuration do |config|
   # 支持
   # * BsWechatMiniProgram::OssAdapter::Aws
   #
-  # aws_config = Rails.application.credentials.dig(Rails.env.to_sym, :aws_config)
+  # ### 对象存储
+  #
+  # oss_config = Rails.application.credentials.dig(Rails.env.to_sym, :oss_config)
+  #
+  # AWS S3
+  #
+  # BsWechatMiniProgram::OssAdapter::Aws
+  #
+  # 腾讯云COS
+  #
+  # BsWechatMiniProgram::OssAdapter::Tencent
   #
   # config.oss_adapter = BsWechatMiniProgram::OssAdapter::Aws
+  #
   # config.oss_config = {
-  #   access_key_id: aws_config[:access_key_id],
-  #   secret_access_key: aws_config[:secret_access_key],
-  #   region: aws_config[:region],
-  #   bucket: aws_config[:oss_bucket]
+  #   access_key_id: oss_config[:access_key_id],
+  #   secret_access_key: oss_config[:secret_access_key],
+  #   region: oss_config[:region],
+  #   bucket: oss_config[:oss_bucket]
   # }
 end

@@ -14,6 +14,14 @@ module BsWechatMiniProgram
       def self.upload_through_file!(file)
         raise "子类重写该方法"
       end
+
+      def self.signature
+        raise "子类重写该方法"
+      end
+
+      def self.upload_path
+        @upload_path ||= "media/uploads"
+      end
     end
   end
 end
