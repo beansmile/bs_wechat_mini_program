@@ -26,4 +26,10 @@ BsWechatMiniProgram.configuration do |config|
   #   region: aws_config[:region],
   #   bucket: aws_config[:oss_bucket]
   # }
+
+  # 使用订阅消息需要设置 redis
+  # 需要在 api 实现 current_user
+  Sidekiq.redis do |redis|
+    config.redis = redis
+  end
 end

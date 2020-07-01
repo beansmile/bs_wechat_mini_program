@@ -1,0 +1,14 @@
+templates: &templates
+  event: template_id
+
+development:
+  <<: *templates
+
+test:
+  <<: *templates
+
+staging:
+  <<: *templates
+
+production:
+  <<: *templates
