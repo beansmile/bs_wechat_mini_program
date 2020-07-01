@@ -9,7 +9,7 @@ require "bs_wechat_mini_program/oss_adapter"
 module BsWechatMiniProgram
   mattr_accessor :appid, :secret, :get_access_token_api_prefix, :oss_adapter
 
-  mattr_accessor :oss_config
+  mattr_accessor :oss_config, :redis
   @@oss_config = {}
 
   mattr_accessor :set_wxacode_page_option
