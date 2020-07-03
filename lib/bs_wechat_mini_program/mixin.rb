@@ -38,13 +38,9 @@ module BsWechatMiniProgram
               file << response
             end
 
-            path = BsWechatMiniProgram.oss_adapter.upload_through_path!(temp_file_path)
+            send(column).attach(io: File.open(temp_file_path), filename: filename, content_type: "image/jpg")
 
             FileUtils.rm_f(temp_file_path)
-
-            self.send "#{column}=", path
-
-            save
           else
             raise response["errmsg"]
           end

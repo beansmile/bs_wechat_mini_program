@@ -29,5 +29,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails", "~> 6.0.3"
   spec.add_dependency "httparty", "~> 0.18.0"
-  spec.add_dependency "aws-sdk", "~> 3"
 end

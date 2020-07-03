@@ -42,7 +42,7 @@ Other mini program API
 
 set_unlimited_wxacode
 
-生成无限制小程序码并上传到OSS（需要配置oss_adapter和oss_config)
+生成无限制小程序码并上传到OSS（依赖ActiveStorage)
 
 用法
 
@@ -50,7 +50,7 @@ set_unlimited_wxacode
 set_unlimited_wxacode :wxacode, page: "page/index/index", scene: -> { "id=#{id}" }
 ```
 
-第一个参数为需要保存OSS文件路径的属性
+第一个参数为has_one_attached对应的属性
 
 第二个参数为Hash类型
 
