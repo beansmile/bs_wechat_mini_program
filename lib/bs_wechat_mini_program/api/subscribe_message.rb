@@ -3,6 +3,11 @@
 module BsWechatMiniProgram
   module API
     module SubscribeMessage
+      # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.getTemplateList.html
+      # 获取当前帐号下的个人模板列表
+      def get_template_list
+        http_get("/wxaapi/newtmpl/gettemplate")
+      end
 
       # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
       # 发送订阅消息
