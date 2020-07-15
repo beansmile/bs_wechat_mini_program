@@ -20,6 +20,8 @@ module BsWechatMiniProgram
         1. 在 config/bs_wechat_mini_program.rb 配置所用的 redis
         2. 在 config/subscribe_message_templates.yml 需要的模板
         3. 对 current_user 实现 wechat_mp_openid 方法
+        为了支持获取手机号，你需要：
+        1.对 current_user 实现 wechat_mp_session_key 方法
       DOC
       )
     end
