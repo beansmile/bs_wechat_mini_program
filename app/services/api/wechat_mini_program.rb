@@ -33,5 +33,31 @@ class API::WechatMiniProgram < Grape::API
     get "templates" do
       BsWechatMiniProgram::WechatSubscribe::TEMPLATES
     end
+
+    desc "获取微信用户手机号", detail: <<-NOTES.strip_heredoc
+    ```json
+    {
+      "phoneNumber"=>"1598914xxxx",
+      "purePhoneNumber"=>"1598914xxxx",
+      "countryCode"=>"86"
+    }
+    ```
+    NOTES
+    params do
+      requires :encrypted_data, type: String, desc: "完整用户信息的加密数据"
+      requires :iv, type: String, desc: "加密算法的初始向量"
+    end
+    post "authorize_phone" do
+      user_phone_data = BsWechatMiniProgram.client.decrypt!(current_user.wechat_mp_session_key, params[:encrypted_data], params[:iv])
+      # phoneNumberData:
+      # {
+      #   "phoneNumber"=>"1598914xxxx",
+      #   "purePhoneNumber"=>"1598914xxxx",
+      #   "countryCode"=>"86",
+      #   "watermark"=>{"timestamp"=>1590565990, "appid"=>"wx93bf3795383fxxxx"}
+      # }
+      user_phone_data.extract!("watermark")
+      present user_phone_data.as_json
+    end
   end
 end
