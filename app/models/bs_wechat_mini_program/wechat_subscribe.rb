@@ -54,11 +54,17 @@ module BsWechatMiniProgram
     end
 
     def template_message_params
+      data = if extra.present?
+               self.class.data_format(target.send("#{event}_data", extra.deep_symbolize_keys))
+             else
+               self.class.data_format(target.send("#{event}_data"))
+             end
+
       {
         touser: openid,
         template_id: template_id,
         page: page,
-        data: self.class.data_format(target.send("#{event}_data"))
+        data: data
       }
     end
 
