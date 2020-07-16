@@ -2,8 +2,8 @@
 
 module BsWechatMiniProgram
   class SetUnlimitedWxacodeJob < ApplicationJob
-    def perform(resource, column)
-      resource.send("set_#{column}_with_unlimited_wxacode")
+    def perform(resource, name, column)
+      resource.send("set_#{column}_with_#{name}_unlimited_wxacode")
     end
   end
 end

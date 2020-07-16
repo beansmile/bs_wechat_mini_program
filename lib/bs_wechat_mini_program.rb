@@ -6,7 +6,7 @@ require "bs_wechat_mini_program/client"
 require "bs_wechat_mini_program/mixin"
 
 module BsWechatMiniProgram
-  mattr_accessor :appid, :secret, :get_access_token_api_prefix, :redis
+  mattr_accessor :name, :appid, :secret, :get_access_token_api_prefix, :redis
 
   mattr_accessor :set_wxacode_page_option
   @@set_wxacode_page_option = true
@@ -16,7 +16,7 @@ module BsWechatMiniProgram
   end
 
   def self.client
-    @@client ||= BsWechatMiniProgram::Client.new(appid, secret, { get_access_token_api_prefix: get_access_token_api_prefix })
+    @@client ||= BsWechatMiniProgram::Client.new(name, appid, secret, { get_access_token_api_prefix: get_access_token_api_prefix })
   end
 end
 

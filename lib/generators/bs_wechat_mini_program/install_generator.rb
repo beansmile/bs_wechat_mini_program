@@ -13,7 +13,7 @@ module BsWechatMiniProgram
       )
       template(
         "../templates/config/subscribe_message_templates.yml",
-        "config/subscribe_message_templates.yml"
+        "config/client_subscribe_message_templates.yml"
       )
       say(<<-DOC
         为了支持订阅消息，你需要：

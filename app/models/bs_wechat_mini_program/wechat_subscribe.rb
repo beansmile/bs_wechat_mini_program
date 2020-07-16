@@ -1,6 +1,8 @@
 module BsWechatMiniProgram
   class WechatSubscribe < ApplicationRecord
-    TEMPLATES = YAML.load(File.read("#{Rails.root}/config/subscribe_message_templates.yml"))[Rails.env]
+    BsWechatMiniProgram::Client.name_clients.keys.each do |name|
+      const_set("#{name.upcase}_TEMPLATES", YAML.load(File.read("#{Rails.root}/config/#{name}_subscribe_message_templates.yml"))[Rails.env])
+    end
 
     belongs_to :target, polymorphic: true
 
@@ -38,43 +40,47 @@ module BsWechatMiniProgram
       end
     end
 
-    def self.send_template_later(openid, event, target, page = nil, extra = {})
-      wechat_subscribe = pending.find_by(openid: openid, event: event, target: target)
+    BsWechatMiniProgram::Client.name_clients.values.each do |client|
+      # send_client_template_later
+      # send_staff_template_later
+      define_singleton_method "send_#{client.name}_template_later" do |openid, event, target, page = nil, extra = {}|
+        wechat_subscribe = pending.find_by(appid: client.appid, openid: openid, event: event, target: target)
 
-      return unless wechat_subscribe
+        return unless wechat_subscribe
 
-      wechat_subscribe.page = page
-      wechat_subscribe.extra = extra
+        wechat_subscribe.page = page
+        wechat_subscribe.extra = extra
 
-      wechat_subscribe.send_template_later
-    end
+        wechat_subscribe.send("send_#{client.name}_template_later")
+      end
 
-    def template_id
-      TEMPLATES[event.to_s]
-    end
+      define_method "#{client.name}_template_id" do
+        self.class.const_get("#{client.name.upcase}_TEMPLATES")[event.to_s]
+      end
 
-    def template_message_params
-      data = if extra.present?
-               self.class.data_format(target.send("#{event}_data", extra.deep_symbolize_keys))
-             else
-               self.class.data_format(target.send("#{event}_data"))
-             end
+      define_method "#{client.name}_template_message_params" do
+        data = if extra.present?
+                 self.class.data_format(target.send("#{event}_data", extra.deep_symbolize_keys))
+               else
+                 self.class.data_format(target.send("#{event}_data"))
+               end
 
-      {
-        touser: openid,
-        template_id: template_id,
-        page: page,
-        data: data
-      }
-    end
+        {
+          touser: openid,
+          template_id: send("#{client.name}_template_id"),
+          page: page,
+          data: data
+        }
+      end
 
-    def send_template_later
-      return if Rails.env.test?
+      define_method "send_#{client.name}_template_later" do
+        return if Rails.env.test?
 
-      transaction do
-        BsWechatMiniProgram.redis.multi do
-          completed!
-          WechatTemplateMessageJob.perform_later(template_message_params)
+        transaction do
+          BsWechatMiniProgram.redis.multi do
+            completed!
+            SendSubscribeMessageJob.perform_later(client.appid, send("#{client.name}_template_message_params"))
+          end
         end
       end
     end

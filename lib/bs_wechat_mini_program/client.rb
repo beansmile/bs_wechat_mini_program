@@ -17,7 +17,7 @@ module BsWechatMiniProgram
 
     @@logger = ::Logger.new("./log/mini_program.log")
 
-    ACCESS_TOKEN_CACHE_KEY = "mini_program_access_token"
+    ACCESS_TOKEN_CACHE_KEY_PREFIX = "mini_program_access_token"
     ENV_FALLBACK_ARRAY = [:production, :staging, :development]
     HTTP_ERRORS = [
       EOFError,
@@ -30,9 +30,21 @@ module BsWechatMiniProgram
     ]
     TIMEOUT = 5
 
-    attr_accessor :appid, :secret, :get_access_token_api_prefix
+    attr_accessor :name, :appid, :secret, :get_access_token_api_prefix
+    mattr_accessor :rel
+    @@appid_clients = {}
+    @@name_clients = {}
 
-    def initialize(appid, secret, options = {})
+    def self.find_by_appid(appid)
+      app_idclients[appid]
+    end
+
+    def self.find_by_name(name)
+      name_clients[name]
+    end
+
+    def initialize(name, appid, secret, options = {})
+      @name = name
       @appid = appid
       @secret = secret
       @get_access_token_api_prefix = if options[:get_access_token_api_prefix].present?
@@ -40,6 +52,8 @@ module BsWechatMiniProgram
                                else
                                  "/app_api/v1"
                                end
+      self.class.appid_clients[appid] = self
+      self.class.name_clients[name] = self
     end
 
     def host_key
@@ -72,9 +86,13 @@ module BsWechatMiniProgram
       result
     end
 
+    def access_token_cache_key
+      @access_token_cache_key ||= "#{ACCESS_TOKEN_CACHE_KEY_PREFIX}_#{appid}"
+    end
+
     # return token
     def get_access_token
-      access_token = Rails.cache.fetch(ACCESS_TOKEN_CACHE_KEY)
+      access_token = Rails.cache.fetch(access_token_cache_key)
 
       return access_token if access_token
 
@@ -89,11 +107,11 @@ module BsWechatMiniProgram
           # 未部署的环境暂时不配置host
           next if host.blank?
 
-          resp = http_get("#{host}/#{get_access_token_api_prefix}/wechat_mini_program/access_token", { headers: { "api-authorization-token" => Rails.application.credentials.dig(env, api_authorization_token_key) } }, false)
+          resp = http_get("#{host}/#{get_access_token_api_prefix}/wechat_mini_program/access_token?appid=#{appid}", { headers: { "api-authorization-token" => Rails.application.credentials.dig(env, api_authorization_token_key) } }, false)
 
           next unless access_token = resp["access_token"]
 
-          Rails.cache.write(ACCESS_TOKEN_CACHE_KEY, access_token, expires_in: 5.minutes)
+          Rails.cache.write(access_token_cache_key, access_token, expires_in: 5.minutes)
 
           break
         end
@@ -106,7 +124,7 @@ module BsWechatMiniProgram
       resp = http_get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, false)
 
       access_token = resp["access_token"]
-      Rails.cache.write(ACCESS_TOKEN_CACHE_KEY, access_token, expires_in: 100.minutes)
+      Rails.cache.write(access_token_cache_key, access_token, expires_in: 100.minutes)
 
       access_token
     end
