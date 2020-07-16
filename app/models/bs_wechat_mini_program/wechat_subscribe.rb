@@ -74,7 +74,7 @@ module BsWechatMiniProgram
       transaction do
         BsWechatMiniProgram.redis.multi do
           completed!
-          WechatTemplateMessageJob.perform_later(template_message_params)
+          SendSubscribeMessageJob.perform_later(template_message_params)
         end
       end
     end
