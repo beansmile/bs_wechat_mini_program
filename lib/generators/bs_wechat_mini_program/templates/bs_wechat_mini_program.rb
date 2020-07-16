@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 
-# client_wechat_config = Rails.application.credentials.dig(Rails.env.to_sym, :wechat)
+wechat_config = Rails.application.credentials.dig(Rails.env.to_sym, :wechat)
 # staff_wechat_config = Rails.application.credentials.dig(Rails.env.to_sym, :staff_wechat)
 
 # 第一个参数为name，如果支持多个小程序，则不同的小程序用不同的name

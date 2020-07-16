@@ -35,8 +35,16 @@ module BsWechatMiniProgram
     @@appid_clients = {}
     @@name_clients = {}
 
+    def self.appid_clients
+      @@appid_clients
+    end
+
+    def self.name_clients
+      @@name_clients
+    end
+
     def self.find_by_appid(appid)
-      app_idclients[appid]
+      appid_clients[appid]
     end
 
     def self.find_by_name(name)
