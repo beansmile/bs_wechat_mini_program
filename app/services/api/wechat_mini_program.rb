@@ -48,6 +48,7 @@ class API::WechatMiniProgram < Grape::API
       requires :iv, type: String, desc: "加密算法的初始向量"
     end
     post "authorize_phone" do
+      error!("401 Unauthorized", 401) unless current_user
       user_phone_data = BsWechatMiniProgram.client.decrypt!(current_user.wechat_mp_session_key, params[:encrypted_data], params[:iv])
       # phoneNumberData:
       # {
@@ -59,5 +60,29 @@ class API::WechatMiniProgram < Grape::API
       user_phone_data.extract!("watermark")
       present user_phone_data.as_json
     end
+
+    desc "获取小程序分享二维码", detail: <<-NOTES.strip_heredoc
+    获取小程序分享二维码
+    NOTES
+    params do
+      requires :path, type: String, desc: "小程序页面"
+      requires :scene, type: String, desc: "小程序页面参数"
+      optional :width, type: Integer, desc: "二维码宽度"
+      optional :is_hyaline, type: Boolean, desc: "是否需要透明底色"
+    end
+    get "mini_program_qrcode" do
+      error!("401 Unauthorized", 401) unless current_user
+      scene = params[:scene] + "&tc=#{current_user.tracking_code}"
+      content_type "application/octet-stream;charset=ASCII-8BIT"
+      env["api.format"] = :binary
+      BsWechatMiniProgram.client.get_unlimited_wxacode(
+        scene, {
+          page: params[:path],
+          width: params[:width] || 280,
+          is_hyaline: params[:is_hyaline] || false
+        }
+      )
+    end
+
   end
 end
