@@ -4,7 +4,7 @@ class API::WechatMiniProgram < Grape::API
   namespace :wechat_mini_program do
     desc "获取access token", summary: "获取access token", skip_authentication: true
     params do
-      requires :appid, desc: "小程序appid"
+      requires :appid, values: BsWechatMiniProgram::Client.appid_clients.keys, desc: "小程序appid"
     end
     get "access_token" do
       error!({ error_message: "401 Unauthorized" }, 401) if request.headers["Api-Authorization-Token"] != Rails.application.credentials.dig(Rails.env.to_sym, BsWechatMiniProgram.client.api_authorization_token_key)
@@ -14,7 +14,7 @@ class API::WechatMiniProgram < Grape::API
 
     desc "上报用户订阅模板id"
     params do
-      requires :appid, desc: "小程序appid"
+      requires :appid, values: BsWechatMiniProgram::Client.appid_clients.keys, desc: "小程序appid"
       requires :subscribe, type: Array[JSON] do
         requires :target_type, type: String, desc: "相关对象类型"
         requires :target_id, type: Integer, desc: "相关对象对应的ID"
@@ -35,7 +35,7 @@ class API::WechatMiniProgram < Grape::API
 
     desc "获取所有模板id"
     params do
-      requires :appid, desc: "小程序appid"
+      requires :appid, values: BsWechatMiniProgram::Client.appid_clients.keys, desc: "小程序appid"
     end
     get "templates" do
       client = BsWechatMiniProgram::Client.find_by_appid(params[:appid])
@@ -53,7 +53,7 @@ class API::WechatMiniProgram < Grape::API
     ```
     NOTES
     params do
-      requires :appid, desc: "小程序appid"
+      requires :appid, values: BsWechatMiniProgram::Client.appid_clients.keys, desc: "小程序appid"
       requires :encrypted_data, type: String, desc: "完整用户信息的加密数据"
       requires :iv, type: String, desc: "加密算法的初始向量"
     end

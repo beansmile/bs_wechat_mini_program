@@ -7,7 +7,7 @@ module BsWechatMiniProgram
       BsWechatMiniProgram::Client.name_clients.keys.each do |name|
         # set_client_unlimited_wxcode
         # set_staff_unlimited_wxcode
-        define_method "set_#{name}_unlimited_wxacode" |column, options = {}|
+        define_method "set_#{name}_unlimited_wxacode" do |column, options = {}|
           send :after_create_commit do
             BsWechatMiniProgram::SetUnlimitedWxacodeJob.perform_later(self, name, column)
           end
