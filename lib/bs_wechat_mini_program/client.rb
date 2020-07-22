@@ -115,7 +115,8 @@ module BsWechatMiniProgram
       define_method "http_#{method}" do |path, options = {}, need_access_token = true|
         body = (options[:body] || {})
         headers = (options[:headers] || {}).reverse_merge({
-          "Content-Type" => "application/json"
+          "Content-Type" => "application/json",
+          "Accept-Encoding" => "*"
         })
         path = "#{path}?access_token=#{get_access_token}" if need_access_token
 
@@ -124,10 +125,10 @@ module BsWechatMiniProgram
         @@logger.debug("request[#{uuid}]: method: #{method}, url: #{path}, body: #{body}, headers: #{headers}")
 
         response = begin
-                     body = self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT).body
-                     JSON.parse(body)
+                     resp = self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT).body
+                     JSON.parse(resp)
                    rescue JSON::ParserError
-                     body
+                     resp
                    rescue *HTTP_ERRORS
                      { "errmsg" => "连接超时" }
                    end
