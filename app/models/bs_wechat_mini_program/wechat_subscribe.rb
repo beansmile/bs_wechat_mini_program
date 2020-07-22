@@ -64,7 +64,8 @@ module BsWechatMiniProgram
         touser: openid,
         template_id: template_id,
         page: page,
-        data: data
+        data: data,
+        miniprogram_state: Rails.env.production? ? "formal" : "trial"
       }
     end
 
