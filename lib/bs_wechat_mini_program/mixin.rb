@@ -20,14 +20,15 @@ module BsWechatMiniProgram
                     "id=#{id}"
                   end
 
-          data = {}
+          data = options.slice(:width, :auto_color, :line_color, :is_hyaline)
 
           data[:page] = options[:page] if BsWechatMiniProgram.set_wxacode_page_option
 
           response = BsWechatMiniProgram.client.get_unlimited_wxacode(scene, data)
 
           if response.is_a?(String)
-            filename = Digest::MD5.hexdigest(response).concat(".jpg")
+            img_type = data[:is_hyaline] ? "png" : "jpg"
+            filename = Digest::MD5.hexdigest(response).concat(".#{img_type}")
 
             folder = "./tmp/wxacodes"
             temp_file_path = "#{folder}/#{filename}"
@@ -38,7 +39,7 @@ module BsWechatMiniProgram
               file << response
             end
 
-            send(column).attach(io: File.open(temp_file_path), filename: filename, content_type: "image/jpg")
+            send(column).attach(io: File.open(temp_file_path), filename: filename, content_type: "image/#{img_type}")
 
             FileUtils.rm_f(temp_file_path)
           else
