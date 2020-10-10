@@ -2,13 +2,23 @@
 
 class API::WechatMiniProgram < Grape::API
   namespace :wechat_mini_program do
+    helpers do
+      def current_wechat_mini_program_client
+        @current_wechat_mini_program_client ||= BsWechatMiniProgram.get_client_by_appid.call(params[:appid])
+      end
+    end
+
     desc "获取access token", summary: "获取access token", skip_authentication: true
+    params do
+      requires :appid, desc: "小程序appid"
+    end
     get "access_token" do
       error!({ error_message: "401 Unauthorized" }, 401) if request.headers["Api-Authorization-Token"] != Rails.application.credentials.dig(Rails.env.to_sym, BsWechatMiniProgram.client.api_authorization_token_key)
 
-      { access_token: BsWechatMiniProgram.client.get_access_token }
+      { access_token: current_wechat_mini_program_client.get_access_token }
     end
 
+    # TODO 需要兼容最新版版
     desc "上报用户订阅模板id"
     params do
       requires :subscribe, type: Array[JSON] do
@@ -29,6 +39,7 @@ class API::WechatMiniProgram < Grape::API
       response_success
     end
 
+    # TODO 需要兼容最新版版
     desc "获取所有模板id"
     get "templates" do
       BsWechatMiniProgram::WechatSubscribe::TEMPLATES
@@ -44,12 +55,13 @@ class API::WechatMiniProgram < Grape::API
     ```
     NOTES
     params do
+      requires :appid, desc: "小程序appid"
       requires :encrypted_data, type: String, desc: "完整用户信息的加密数据"
       requires :iv, type: String, desc: "加密算法的初始向量"
     end
     post "authorize_phone" do
       error!("401 Unauthorized", 401) unless current_user
-      user_phone_data = BsWechatMiniProgram.client.decrypt!(current_user.wechat_mp_session_key, params[:encrypted_data], params[:iv])
+      user_phone_data = current_wechat_mini_program_client.decrypt!(current_user.wechat_mp_session_key, params[:encrypted_data], params[:iv])
       # phoneNumberData:
       # {
       #   "phoneNumber"=>"1598914xxxx",
@@ -65,6 +77,7 @@ class API::WechatMiniProgram < Grape::API
     获取小程序分享二维码
     NOTES
     params do
+      requires :appid, desc: "小程序appid"
       requires :path, type: String, desc: "小程序页面"
       requires :scene, type: String, desc: "小程序页面参数"
       optional :width, type: Integer, desc: "二维码宽度"
@@ -75,7 +88,7 @@ class API::WechatMiniProgram < Grape::API
       scene = params[:scene] + "&tc=#{current_user.tracking_code}"
       content_type "application/octet-stream;charset=ASCII-8BIT"
       env["api.format"] = :binary
-      BsWechatMiniProgram.client.get_unlimited_wxacode(
+      current_wechat_mini_program_client.get_unlimited_wxacode(
         scene, {
           page: params[:path],
           width: params[:width] || 280,
@@ -83,6 +96,5 @@ class API::WechatMiniProgram < Grape::API
         }
       )
     end
-
   end
 end

@@ -4,12 +4,20 @@ module BsWechatMiniProgram
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def set_unlimited_wxacode(column, options = {})
+      def set_unlimited_wxacode(column, options = {}, client_options = {})
         send :after_create_commit do
           BsWechatMiniProgram::SetUnlimitedWxacodeJob.perform_later(self, column)
         end
 
         send :define_method, "set_#{column}_with_unlimited_wxacode" do
+          raise "请指定appid" unless client_options[:appid]
+
+          appid = if client_options[:appid].is_a?(String) || client_options[:appid].is_a?(Symbol)
+                    send(client_options[:appid])
+                  else
+                    instance_exec(&client_options[:appid])
+                  end
+
           scene = if options[:scene]
                     if options[:scene].is_a?(String) || options[:scene].is_a?(Symbol)
                       send(options[:scene])
@@ -24,7 +32,7 @@ module BsWechatMiniProgram
 
           data[:page] = options[:page] if BsWechatMiniProgram.set_wxacode_page_option
 
-          response = BsWechatMiniProgram.client.get_unlimited_wxacode(scene, data)
+          response = BsWechatMiniProgram.get_client_by_appid.call(appid).get_unlimited_wxacode(scene, data)
 
           if response.is_a?(String)
             img_type = data[:is_hyaline] ? "png" : "jpg"
