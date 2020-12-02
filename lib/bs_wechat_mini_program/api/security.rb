@@ -5,7 +5,7 @@ module BsWechatMiniProgram
     module Security
       # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/sec-check/security.imgSecCheck.html
       # 校验一张图片是否含有违法违规内容。
-      def img_sec_check(media)
+      def img_sec_check(media: media)
         body = {
           media: media
         }

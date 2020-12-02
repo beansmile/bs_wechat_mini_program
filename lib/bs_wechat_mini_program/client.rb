@@ -15,9 +15,8 @@ module BsWechatMiniProgram
 
     base_uri "https://api.weixin.qq.com"
 
-    @@logger = ::Logger.new("./log/mini_program.log")
+    @@logger = ::Logger.new("./log/wechat_mini_program.log")
 
-    ACCESS_TOKEN_CACHE_KEY = "mini_program_access_token"
     ENV_FALLBACK_ARRAY = [:production, :staging, :development]
     HTTP_ERRORS = [
       EOFError,
@@ -30,27 +29,14 @@ module BsWechatMiniProgram
     ]
     TIMEOUT = 5
 
-    attr_accessor :appid, :secret, :get_access_token_api_prefix
+    attr_accessor :appid, :secret
 
-    def initialize(appid, secret, options = {})
+    def initialize(appid:, secret:)
       @appid = appid
       @secret = secret
-      @get_access_token_api_prefix = if options[:get_access_token_api_prefix].present?
-                                 options[:get_access_token_api_prefix]
-                               else
-                                 "/app_api/v1"
-                               end
     end
 
-    def host_key
-      :host
-    end
-
-    def api_authorization_token_key
-      :api_authorization_token
-    end
-
-    def decrypt!(session_key, encrypted_data, iv)
+    def decrypt!(session_key:, encrypted_data:, iv:)
       begin
         cipher = OpenSSL::Cipher::AES.new 128, :CBC
         cipher.decrypt
@@ -72,9 +58,13 @@ module BsWechatMiniProgram
       result
     end
 
+    def access_token_cache_key
+      @access_token_cache_key ||= "#{appid}:#wechat_mini_program_access_token"
+    end
+
     # return token
     def get_access_token
-      access_token = Rails.cache.fetch(ACCESS_TOKEN_CACHE_KEY)
+      access_token = Rails.cache.fetch(access_token_cache_key)
 
       return access_token if access_token
 
@@ -84,16 +74,16 @@ module BsWechatMiniProgram
 
           break
         else
-          host = Rails.application.credentials.dig(env, host_key)
+          host = Rails.application.credentials.dig(env, :host)
 
           # 未部署的环境暂时不配置host
           next if host.blank?
 
-          resp = http_get("#{host}/#{get_access_token_api_prefix}/wechat_mini_program/access_token", { headers: { "api-authorization-token" => Rails.application.credentials.dig(env, api_authorization_token_key) } }, false)
+          resp = http_get("#{host}/wechat_mini_program_api/access_token", { body: { api_authorization_token: Rails.application.credentials.dig(env, :api_authorization_token) } }, need_access_token: false)
 
           next unless access_token = resp["access_token"]
 
-          Rails.cache.write(ACCESS_TOKEN_CACHE_KEY, access_token, expires_in: 5.minutes)
+          Rails.cache.write(access_token_cache_key, access_token, expires_in: 5.minutes)
 
           break
         end
@@ -103,22 +93,23 @@ module BsWechatMiniProgram
     end
 
     def refresh_access_token
-      resp = http_get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, false)
+      resp = http_get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, need_access_token: false)
 
       access_token = resp["access_token"]
-      Rails.cache.write(ACCESS_TOKEN_CACHE_KEY, access_token, expires_in: 100.minutes)
+      Rails.cache.write(access_token_cache_key, access_token, expires_in: 100.minutes)
 
       access_token
     end
 
     [:get, :post].each do |method|
-      define_method "http_#{method}" do |path, options = {}, need_access_token = true|
-        body = (options[:body] || {})
+      define_method "http_#{method}" do |path, options = {}, other_config = {}|
+        body = (options[:body] || {}).select { |_, v| !v.nil? }
         headers = (options[:headers] || {}).reverse_merge({
           "Content-Type" => "application/json",
           "Accept-Encoding" => "*"
         })
-        path = "#{path}?access_token=#{get_access_token}" if need_access_token
+        other_config = other_config.reverse_merge!({ need_access_token: true, format_data: true })
+        path = "#{path}?access_token=#{get_access_token}" if other_config[:need_access_token]
 
         uuid = SecureRandom.uuid
 
@@ -134,8 +125,7 @@ module BsWechatMiniProgram
                    end
 
         @@logger.debug("response[#{uuid}]: #{response}")
-
-        response
+        other_config[:format_data] ? BsWechatMiniProgram::Result.new(response) : response
       end
     end
   end
