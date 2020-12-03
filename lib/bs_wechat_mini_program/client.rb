@@ -59,7 +59,7 @@ module BsWechatMiniProgram
     end
 
     def access_token_cache_key
-      @access_token_cache_key ||= "#{appid}:#wechat_mini_program_access_token"
+      @access_token_cache_key ||= "#{appid}:wechat_mini_program_access_token"
     end
 
     # return token
@@ -79,7 +79,9 @@ module BsWechatMiniProgram
           # 未部署的环境暂时不配置host
           next if host.blank?
 
-          resp = http_get("#{host}/wechat_mini_program_api/access_token", { body: { api_authorization_token: Rails.application.credentials.dig(env, :api_authorization_token) } }, need_access_token: false)
+          resp = self.class.get("#{host}/wechat_mini_program_api/v1/#{appid}/access_token", {
+            body: { api_authorization_token: Rails.application.credentials.dig(env, :api_authorization_token) }
+          })
 
           next unless access_token = resp["access_token"]
 
