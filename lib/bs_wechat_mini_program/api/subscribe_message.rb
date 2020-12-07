@@ -11,7 +11,7 @@ module BsWechatMiniProgram
 
       # https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
       # 发送订阅消息
-      def send_subscribe_message(touser:, template_id:, page: nil, data:, miniprogram_state:, lang:)
+      def send_subscribe_message(touser:, template_id:, data:, page: nil, miniprogram_state: nil, lang: nil)
         body = {
           touser: touser,
           template_id: template_id,

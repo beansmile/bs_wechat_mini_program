@@ -1,13 +1,7 @@
 # frozen_string_literal: true
 
-class BsWechatMiniProgram::API::Application < Grape::API
-  namespace :applications do
-    helpers do
-      def resource
-        @resource ||= BsWechatMiniProgram::Application.find_by!(appid: params[:appid])
-      end
-    end
-
+class BsWechatMiniProgram::API::Applications < Grape::API
+  bs_wmp_apis [], { find_by_key: :appid } do
     route_param :appid do
       desc "获取access token", summary: "获取access token"
       params do

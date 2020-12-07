@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "custom_grape"
+
 require "bs_wechat_mini_program/engine"
 require "bs_wechat_mini_program/api"
 require "bs_wechat_mini_program/client"
