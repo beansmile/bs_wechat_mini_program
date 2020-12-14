@@ -11,7 +11,7 @@ module BsWechatMiniProgram
         staging: "trial",
       }[Rails.env] || "developer"
 
-      response = applicatoin.client.send_subscribe_message(
+      response = application.client.send_subscribe_message(
         touser: account_subscribe.openid,
         template_id: subscribe_message_template.pri_tmpl_id,
         data: data,
