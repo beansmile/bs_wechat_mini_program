@@ -13,7 +13,12 @@ module BsWechatMiniProgram
     end
 
     def success?
-      self["errcode"] == 0 && self["errmsg"] == SUCCESS_FLAG
+      # 部分API是请求成功不会返回errcode和errmsg
+      if self["errcode"].nil? && self["errmsg"].nil?
+        true
+      else
+        self["errcode"] == 0 && self["errmsg"] == SUCCESS_FLAG
+      end
     end
 
     def cn_msg

@@ -12,6 +12,7 @@ module BsWechatMiniProgram
     include BsWechatMiniProgram::API::SubscribeMessage
     include BsWechatMiniProgram::API::Wxacode
     include BsWechatMiniProgram::API::Security
+    include BsWechatMiniProgram::API::Analysis
 
     base_uri "https://api.weixin.qq.com"
 
@@ -118,8 +119,13 @@ module BsWechatMiniProgram
         @@logger.debug("request[#{uuid}]: method: #{method}, url: #{path}, body: #{body}, headers: #{headers}")
 
         response = begin
-                     resp = self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT).body
-                     JSON.parse(resp)
+                     resp = self.class.send(method, path, body: JSON.pretty_generate(body), headers: headers, timeout: TIMEOUT)
+
+                     if resp.success?
+                       JSON.parse(resp.body)
+                     else
+                       { "errmsg" => "请求错误（code: #{resp.code})" }
+                     end
                    rescue JSON::ParserError
                      resp
                    rescue *HTTP_ERRORS

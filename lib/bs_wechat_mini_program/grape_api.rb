@@ -23,6 +23,7 @@ end
   :applications,
   :subscribe_message_templates,
   :wxacodes,
+  :analyses,
 ].each do |name|
   require "bs_wechat_mini_program/grape_api/#{name}"
 end
