@@ -127,7 +127,6 @@ module BsWechatMiniProgram
                    end
 
         @@logger.debug("response[#{uuid}]: #{response}")
-        # TODO: 处理http非200请求
         other_config[:format_data] ? BsWechatMiniProgram::Result.new(response) : response
       end
     end
