@@ -23,7 +23,6 @@ module BsWechatMiniProgram
     # class methods
 
     # instance methods
-    protected
     def enqueue_send_subscribe_message_job(data:, page: nil, miniprogram_state: nil, lang: nil)
       SendSubscribeMessageJob.perform_later({
         account_subscribe: self,

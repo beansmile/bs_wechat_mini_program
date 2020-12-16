@@ -21,7 +21,7 @@ module BsWechatMiniProgram
     # scopes
 
     # class methods
-    def self.send_template_later(openid:, target:, event:, data:, page: nil, miniprogram_state: nil, lang: nil)
+    def self.send_message_later(openid:, target:, event:, data:, page: nil, miniprogram_state: nil, lang: nil)
       account_subscribe = AccountSubscribe.joins(:subscribe_message_template).find_by(openid: openid, target: target, bs_wechat_mini_program_subscribe_message_templates: { event: event })
 
       return unless account_subscribe

@@ -3,13 +3,13 @@
 class BsWechatMiniProgram::API::SubscribeMessageTemplates < Grape::API
   include Grape::Kaminari
 
-  bs_wmp_apis :index do
+  bs_wmp_apis :index, { belongs_to: :application, belongs_to_find_by_key: :appid } do
     desc "上报用户订阅模板id"
     params do
       requires :subscribe, type: Array[JSON] do
         requires :target_type, type: String, desc: "相关对象类型"
         requires :target_id, type: Integer, desc: "相关对象对应的ID"
-        requires :subscribe_message_template_id, type: String, desc: "用户订阅的模板ID", documentation: { param_type: "body" }
+        requires :subscribe_message_template_id, type: Integer, desc: "用户订阅的模板ID", documentation: { param_type: "body" }
       end
     end
     post :subscribe do

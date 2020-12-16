@@ -2,7 +2,7 @@
 
 module BsWechatMiniProgram
   class SendSubscribeMessageJob < ApplicationJob
-    def perform(account_subscribe:, to_user:, data:, miniprogram_state: nil, page: nil, lang: nil)
+    def perform(account_subscribe:, data:, miniprogram_state: nil, page: nil, lang: nil)
       subscribe_message_template = account_subscribe.subscribe_message_template
       application = subscribe_message_template.application
 
@@ -11,7 +11,7 @@ module BsWechatMiniProgram
         staging: "trial",
       }[Rails.env] || "developer"
 
-      response = applicatoin.client.send_subscribe_message(
+      response = application.client.send_subscribe_message(
         touser: account_subscribe.openid,
         template_id: subscribe_message_template.pri_tmpl_id,
         data: data,
