@@ -4,6 +4,12 @@ class BsWechatMiniProgram::API::SubscribeMessageTemplates < Grape::API
   include Grape::Kaminari
 
   bs_wmp_apis :index, { belongs_to: :application, belongs_to_find_by_key: :appid } do
+    helpers do
+      def end_of_association_chain
+        @end_of_association_chain ||= parent.subscribe_message_templates
+      end
+    end
+
     desc "上报用户订阅模板id"
     params do
       requires :subscribe, type: Array[JSON] do
