@@ -20,16 +20,26 @@ class BsWechatMiniProgram::API::Wxacodes < Grape::API
       authorize! :getwxacodeunlimit, application
 
       scene = params[:scene]
-      content_type "application/octet-stream;charset=ASCII-8BIT"
-      env["api.format"] = :binary
 
-      application.client.getwxacodeunlimit(
-        scene: scene,
-        page: params[:page],
-        width: params[:width] || 280,
-        is_hyaline: params[:is_hyaline],
-        auto_color: params[:auto_color]
-      )
+      begin
+        response = application.client.getwxacodeunlimit(
+          scene: scene,
+          page: params[:page],
+          width: params[:width] || 280,
+          is_hyaline: params[:is_hyaline],
+          auto_color: params[:auto_color]
+        )
+        if response.is_a?(String)
+          content_type "application/octet-stream;charset=ASCII-8BIT"
+          env["api.format"] = :binary
+          response
+        elsif response["errcode"] == 41030
+          raise BsWechatMiniProgram::PageNotPublishedError.new("生成二维码错误")
+        end
+      rescue BsWechatMiniProgram::PageNotPublishedError
+        params[:page] = nil
+        retry
+      end
     end
   end
 end
