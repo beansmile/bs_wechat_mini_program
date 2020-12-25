@@ -35,6 +35,8 @@ class BsWechatMiniProgram::API::Wxacodes < Grape::API
           response
         elsif response["errcode"] == 41030
           raise BsWechatMiniProgram::PageNotPublishedError.new("生成二维码错误")
+        else
+          response
         end
       rescue BsWechatMiniProgram::PageNotPublishedError
         params[:page] = nil

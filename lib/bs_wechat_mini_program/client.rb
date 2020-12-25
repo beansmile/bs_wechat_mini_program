@@ -127,7 +127,7 @@ module BsWechatMiniProgram
                        { "errmsg" => "请求错误（code: #{resp.code})" }
                      end
                    rescue JSON::ParserError
-                     resp
+                     resp.body
                    rescue *HTTP_ERRORS
                      { "errmsg" => "连接超时" }
                    end
