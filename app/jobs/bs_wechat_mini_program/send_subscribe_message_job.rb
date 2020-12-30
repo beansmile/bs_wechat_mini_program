@@ -9,7 +9,7 @@ module BsWechatMiniProgram
       miniprogram_state ||= {
         production: "formal",
         staging: "trial",
-      }[Rails.env] || "developer"
+      }[Rails.env.to_sym] || "developer"
 
       response = application.client.send_subscribe_message(
         touser: account_subscribe.openid,
