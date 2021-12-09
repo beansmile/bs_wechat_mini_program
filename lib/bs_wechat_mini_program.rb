@@ -10,6 +10,7 @@ require "bs_wechat_mini_program/result"
 require "bs_wechat_mini_program/errors"
 
 module BsWechatMiniProgram
+  mattr_accessor :aes_key
 end
 
 ActiveSupport.on_load(:active_record) do
