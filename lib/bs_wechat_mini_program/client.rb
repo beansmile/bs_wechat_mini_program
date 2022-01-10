@@ -13,6 +13,7 @@ module BsWechatMiniProgram
     include BsWechatMiniProgram::API::Wxacode
     include BsWechatMiniProgram::API::Security
     include BsWechatMiniProgram::API::Analysis
+    include BsWechatMiniProgram::API::Business
 
     base_uri "https://api.weixin.qq.com"
 
