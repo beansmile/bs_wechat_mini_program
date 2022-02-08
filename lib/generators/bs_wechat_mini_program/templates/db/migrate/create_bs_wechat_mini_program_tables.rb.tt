@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+class CreateBsWechatMiniProgramTables < ActiveRecord::Migration[6.0]
+  def change
+    create_table :bs_wechat_mini_program_applications do |t|
+      t.string :appid
+      t.string :secret_digest
+
+      t.timestamps
+    end
+
+    create_table :bs_wechat_mini_program_subscribe_message_templates, force: :cascade do |t|
+      t.string :name
+      t.string :event
+      t.string :pri_tmpl_id
+      t.bigint :application_id, null: false, index: { name: "index_bs_wmp_smt_on_application_id"}
+
+      t.timestamps
+    end
+
+    create_table :bs_wechat_mini_program_account_subscribes do |t|
+      t.string :openid
+      t.bigint :subscribe_message_template_id, null: false, index: { name: "index_bs_wmp_as_on_subscribe_message_template_id" }
+      t.references :target, polymorphic: true, null: false, index: { name: "index_bs_wechat_mini_program_account_subscribes_on_target" }
+
+      t.timestamps
+    end
+  end
+end

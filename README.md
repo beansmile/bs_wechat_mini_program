@@ -18,16 +18,9 @@ rails g bs_wechat_mini_program:install
 ```
 
 ## Usage
-Mount Grape API
 
 ```
-mount ::API::WechatMiniProgram
-```
-
-Get mini program access token
-
-```
-BsWechatMiniProgram.client.get_access_token
+API 参考hilltop-fund-server
 ```
 
 Other mini program API
