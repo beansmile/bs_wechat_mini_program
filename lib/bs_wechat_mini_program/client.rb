@@ -81,7 +81,7 @@ module BsWechatMiniProgram
           # 未部署的环境暂时不配置host
           next if host.blank?
 
-          resp = self.class.get("#{host}/wechat_mini_program_api/applications/#{appid}/access_token", {
+          resp = self.class.get("#{host}/app_api/v1/bs_wechat_mini_program/applications/#{appid}/access_token", {
             body: { api_authorization_token: Rails.application.credentials.dig(env, :api_authorization_token) }
           })
 
