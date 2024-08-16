@@ -4,7 +4,7 @@ class CreateBsWechatMiniProgramTables < ActiveRecord::Migration[6.0]
   def change
     create_table :bs_wechat_mini_program_applications do |t|
       t.string :appid
-      t.string :secret_digest
+      t.string :secret
 
       t.timestamps
     end
