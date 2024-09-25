@@ -19,7 +19,6 @@ module BsWechatMiniProgram
 
     @@logger = ::Logger.new("./log/wechat_mini_program.log")
 
-    ENV_FALLBACK_ARRAY = [:production, :staging, :development]
     HTTP_ERRORS = [
       EOFError,
       Errno::ECONNRESET,
@@ -70,35 +69,15 @@ module BsWechatMiniProgram
 
       return access_token if access_token
 
-      ENV_FALLBACK_ARRAY.each do |env|
-        if Rails.env == env.to_s
-          access_token = refresh_access_token
-
-          break
-        else
-          host = Rails.application.credentials.dig(env, :host)
-
-          # 未部署的环境暂时不配置host
-          next if host.blank?
-
-          resp = self.class.get("#{host}/app_api/v1/bs_wechat_mini_program/applications/#{appid}/access_token", {
-            body: { api_authorization_token: Rails.application.credentials.dig(env, :api_authorization_token) }
-          })
-
-          next unless access_token = resp["access_token"]
-
-          Rails.cache.write(access_token_cache_key, access_token, expires_in: 5.minutes)
-
-          break
-        end
-      end
-
-      access_token
+      refresh_access_token
     end
 
     def refresh_access_token
-      resp = http_get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, need_access_token: false)
-
+      resp = http_post("https://api.weixin.qq.com/cgi-bin/stable_token", { body: {
+        appid: appid,
+        secret: secret,
+        grant_type: "client_credential"
+      }}, { need_access_token: false })
       access_token = resp["access_token"]
       Rails.cache.write(access_token_cache_key, access_token, expires_in: 100.minutes)
 
