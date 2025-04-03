@@ -97,7 +97,7 @@ module BsWechatMiniProgram
     end
 
     def refresh_access_token
-      resp = http_get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, need_access_token: false)
+      resp = http_get("https://api.weixin.qq.com/cgi-bin/stable_token?grant_type=client_credential&appid=#{appid}&secret=#{secret}", {}, need_access_token: false)
 
       access_token = resp["access_token"]
       Rails.cache.write(access_token_cache_key, access_token, expires_in: 100.minutes)
